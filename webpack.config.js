@@ -3,11 +3,11 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        app: ['babel-polyfill','./server/currency-convert.js']
-        
+        app: ['babel-polyfill', './server/currency-convert.js']
+
     },
     output: {
-        path: path.resolve(__dirname, 'build'), 
+        path: path.resolve(__dirname, 'build'),
         filename: 'bundle.js'
     },
     module: {
@@ -19,5 +19,7 @@ module.exports = {
                 presets: ['env', 'stage-0']
             }
         }]
-    }
+    },
+    target: 'node'
+    
 };

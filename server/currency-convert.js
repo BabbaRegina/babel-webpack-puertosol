@@ -1,13 +1,20 @@
-// const axios = require('axios');
-const fetch = require('node-fetch');
+const rp = require('request-promise');
+
+
 
 const getExchangeRate = async (from, to) => {
     try {
-        // const res = await axios.get(`http://api.fixer.io/latest?base=${from}`);
-        const res = await fetch(`http://api.fixer.io/latest?base=${from}`);
-        const rate = res.data.rates[to];
+        var options = {
+            uri: `http://api.fixer.io/latest?base=${from}`,
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true 
+        };
+        var response = await rp(options);
+        const rate = response.rates[to];
         if (!rate) {
-            throw new Error();
+            throw new Error('Non esiste rate');
         }
         return rate;
     } catch (error) {
@@ -17,15 +24,15 @@ const getExchangeRate = async (from, to) => {
 
 const getCuntries = async (currencyCode) => {
     try {
-        console.log("getCuntries");
-        let response = await fetch('https://api.github.com');
-        // only proceed once promise is resolved
-        let data = await response.json();
-        console.log(data);
-        // const res = await axios.get(`https://restcountries.eu/rest/v2/currency/${currencyCode}`);
-        var res = await fetch(`https://restcountries.eu/rest/v2/currency/${currencyCode}`);
-        console.log(res.json());
-        return res.data.map((country) => country.name);
+        var options = {
+            uri: `https://restcountries.eu/rest/v2/currency/${currencyCode}`,
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true 
+        };
+        var response = await rp(options);
+        return response.map((country) => country.name);
     } catch (error) {
         console.log(error);
         throw new Error(`Unable to get country that use ${currencyCode}`, error.message);
@@ -39,6 +46,7 @@ const convertCurrencyAsync = async (from, to, amount) => {
     return `Async: ${amount} ${from} is worth ${exchAmm} ${to}. ${from} currency can be used in the following countries: ${countries.join(', ')}`;
 };
 
+// Deprecato
 const convertCurrency = (from, to, amount) => {
     let countries;
     return getCuntries(to).then((tempCountries) => {
@@ -50,9 +58,6 @@ const convertCurrency = (from, to, amount) => {
     });
 };
 
-// convertCurrency('EUR', 'USD', 140).then((status) => console.log(status));
 convertCurrencyAsync('EUR', 'USD', 140).then((status) => console.log(status)).catch((e) => {
     console.log(e.message);
 });
-// getExchangeRate('EUR', 'USD').then((rate) => console.log(rate));
-// getCuntries('EUR').then((names) => console.log(names));
